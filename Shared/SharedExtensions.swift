@@ -16,3 +16,11 @@ extension String {
     }
 
 }
+
+extension Progress {
+
+    static func performDiscretely<ReturnType>(work: () throws -> ReturnType) rethrows -> ReturnType {
+        return try discreteProgress(totalUnitCount: 1).performAsCurrent(withPendingUnitCount: 1, using: work)
+    }
+
+}
