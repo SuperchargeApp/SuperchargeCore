@@ -106,3 +106,17 @@ extension FileManager {
     }
     
 }
+
+extension MutableCollection {
+
+    func removingDuplicates(_ isEqual: (Element, Element) -> Bool) -> [Element] {
+        var ret: [Element] = []
+        for element in self {
+            if !ret.contains(where: { isEqual(element, $0) }) {
+                ret.append(element)
+            }
+        }
+        return ret
+    }
+
+}
