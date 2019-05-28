@@ -8,6 +8,19 @@
 
 import Foundation
 
+func unimplemented(_ message: String? = nil, function: StaticString = #function,
+                   file: StaticString = #file, line: UInt = #line) -> Never {
+    var fullMessage = "\(function) has not been implemented"
+    if let message = message {
+        fullMessage += ". Message: \(message)"
+    }
+    fatalError(fullMessage, file: file, line: line)
+}
+
+func abstract(function: StaticString = #function, file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError("\(function) is expected to be implemented by subclasses", file: file, line: line)
+}
+
 extension String {
 
     func subtracting(_ base: String) -> String {
