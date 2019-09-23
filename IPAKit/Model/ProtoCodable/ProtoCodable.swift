@@ -8,7 +8,14 @@
 
 import Foundation
 
-// TODO: Make ProtoCodableIdentifier type (possibly enum) which specifies identifier mode: eg fromBase/custom. But maybe a bit more extensible so make it a String rawvaluerepresentable and put static methods on it to easily generate it from a base, etc
+// TODO: Make ProtoCodableIdentifier type (possibly enum) which specifies identifier mode
+// eg fromBase/custom. But maybe a bit more extensible so make it a String RawRepresentable
+// and put static methods on it to easily generate it from a base, etc
+
+// TODO: Localize
+public enum ProtoCodableError: Error {
+    case unknownType(String, containerType: String)
+}
 
 // Represents a codable protocol, where the concrete type can be decoded based on the identifier
 public protocol ProtoCodable: Codable {
@@ -28,14 +35,16 @@ public extension ProtoCodable {
 }
 
 // caches the protocodable type mapping to each identifier, for different container types
-private class ProtoCodableIdentifierMapper {
-    static let shared = ProtoCodableIdentifierMapper()
+public class ProtoCodableIdentifierMapper {
+    public static let shared = ProtoCodableIdentifierMapper()
     private init() {}
 
     // [ContainerType: [identifier: type]]
-    var identifiers: [ObjectIdentifier: [String: ProtoCodable.Type]] = [:]
+    private var identifiers: [ObjectIdentifier: [String: ProtoCodable.Type]] = [:]
 
-    func type<T: ProtoCodableContainer>(for identifier: String, in containerType: T.Type) -> ProtoCodable.Type? {
+    public func type<T: ProtoCodableContainer>(
+        for identifier: String, in containerType: T.Type
+    ) -> ProtoCodable.Type? {
         let containerID = ObjectIdentifier(T.self)
 
         let identifierList: [String: ProtoCodable.Type]
@@ -52,9 +61,7 @@ private class ProtoCodableIdentifierMapper {
 
 // a struct that encodes ProtoCodable values with their identifier stored alongside
 // values are decoded by comparing the identifier against those in the list provided by `T.allTypes`
-public protocol ProtoCodableContainer: Codable {
-    static var typeKey: String { get }
-
+public protocol ProtoCodableContainer {
     // unfortunately we can't add a conformance clause here since then we wouldn't
     // be able to use a protocol as the concrete type, because protocols don't
     // conform to themselves
@@ -69,66 +76,32 @@ public protocol ProtoCodableContainer: Codable {
     // TODO: Somehow require Value: ProtoCodable if the converter is direct (or require the user to explicitly set a converter)
     associatedtype Converter: ProtoCodableConverter = ProtoCodableDirectConverter<Value> where Converter.Value == Value
 
+    // encodes the value in the encoder provided by the closure
+    func encodeWithIdentifier(generateEncoder: (String) throws -> Encoder) throws
+    // decodes a value from the given identifier
+    init(from decoder: Decoder, identifier: String) throws
+
+    // TODO: Implement encodeWithIdentifier and decode(withIdentifier:) in ProtoCodableContainer,
+    // and create sub-protocols which implement encode and decode based on the above methods
+    // (one just encodes the key in the main container, the other is a dict representation thing
+
     static var supportedTypes: [ProtoCodable.Type] { get }
-}
-
-private struct ProtoCodableCodingKeys: CodingKey {
-    let stringValue: String
-    var intValue: Int?
-
-    init(_ string: String) {
-        self.stringValue = string
-    }
-    init?(stringValue: String) {
-        self.init(stringValue)
-    }
-    init?(intValue: Int) {
-        return nil
-    }
-}
-
-// TODO: Instead of this, maybe make a Configuration type which contains config options, since there may be other config options like whether the value should be nested (and if so, under what key name)
-extension ProtoCodableContainer {
-    public static var typeKey: String {
-        return "type"
-    }
-
-    private static var typeCodingKey: ProtoCodableCodingKeys {
-        return ProtoCodableCodingKeys(Self.typeKey)
-    }
 }
 
 // encoding/decoding magic
 public extension ProtoCodableContainer {
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: ProtoCodableCodingKeys.self)
-
+    func encodeWithIdentifier(generateEncoder: (String) throws -> Encoder) throws {
         let rawValue = try Converter.convert(value: value)
-
-        // store a string representing the concrete type of `value`
-        // used to avoid ambiguity when decoding
-        let typeID = type(of: rawValue).identifier
-        try container.encode(typeID, forKey: Self.typeCodingKey)
-
-        // store the value itself
+        let identifier = type(of: rawValue).identifier
+        let encoder = try generateEncoder(identifier)
         try rawValue.encode(to: encoder)
     }
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ProtoCodableCodingKeys.self)
-
-        // get the string that represents the concrete type of the ProtoCodable
-        let typeID = try container.decode(String.self, forKey: Self.typeCodingKey)
-
+    init(from decoder: Decoder, identifier: String) throws {
         // find the ProtoCodable.Type in the type list that corresponds to the `type` String
-        guard let protoCodableType = ProtoCodableIdentifierMapper.shared.type(for: typeID, in: Self.self) else {
-            throw DecodingError.dataCorruptedError(
-                forKey: Self.typeCodingKey,
-                in: container,
-                debugDescription: "Unknown type: \(typeID)"
-            )
+        guard let protoCodableType = ProtoCodableIdentifierMapper.shared.type(for: identifier, in: Self.self) else {
+            throw ProtoCodableError.unknownType(identifier, containerType: "\(Self.self)")
         }
-
         // create a ProtoCodable of that type using `decoder`
         let rawValue = try protoCodableType.init(from: decoder)
         try self.init(value: Converter.convert(raw: rawValue))

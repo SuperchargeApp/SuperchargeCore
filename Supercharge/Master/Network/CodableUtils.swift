@@ -48,3 +48,10 @@ struct PossiblyFlatArray<T: Codable>: Codable {
         try container.encode(elements)
     }
 }
+
+extension Encodable {
+    func jsonValue() throws -> Any {
+        let data = try JSONEncoder().encode(self)
+        return try JSONSerialization.jsonObject(with: data)
+    }
+}
