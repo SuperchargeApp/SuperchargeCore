@@ -50,8 +50,15 @@ struct PossiblyFlatArray<T: Codable>: Codable {
 }
 
 extension Encodable {
-    func jsonValue() throws -> Any {
-        let data = try JSONEncoder().encode(self)
-        return try JSONSerialization.jsonObject(with: data)
+    func jsonValue(withEncoder encoder: JSONEncoder = .init()) throws -> Any {
+        let data = try encoder.encode([self])
+        let arr = try JSONSerialization.jsonObject(with: data) as! [Any]
+        return arr[0]
+    }
+
+    func plistValue(withEncoder encoder: PropertyListEncoder = .init()) throws -> Any {
+        let data = try encoder.encode([self])
+        let arr = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [Any]
+        return arr[0]
     }
 }

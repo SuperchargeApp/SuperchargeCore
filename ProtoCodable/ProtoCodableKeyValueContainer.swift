@@ -23,16 +23,18 @@ public struct ProtoCodableKeyValueContainer<T: ProtoCodableContainer>: Codable {
         }
     }
 
-    public let containers: [T]
+    public var containers: [T]
     public init(containers: [T]) {
         self.containers = containers
     }
 
     public var values: [T.Value] {
-        return containers.map { $0.value }
+        get { return containers.map { $0.value } }
+        set { containers = newValue.compactMap { try? T(value: $0) } }
     }
-    public init(values: [T.Value]) throws {
-        self.containers = try values.map(T.init(value:))
+    public init(values: [T.Value]) {
+        self.containers = []
+        self.values = values
     }
 }
 
@@ -51,6 +53,8 @@ extension ProtoCodableKeyValueContainer {
         let rootContainer = try decoder.container(keyedBy: CodingKeys.self)
         for key in rootContainer.allKeys {
             let keyDecoder = try rootContainer.superDecoder(forKey: key)
+            // skip unknown dict keys
+            guard T.protoCodableType(for: key.stringValue) != nil else { continue }
             let container = try T(from: keyDecoder, identifier: key.stringValue)
             containers.append(container)
         }

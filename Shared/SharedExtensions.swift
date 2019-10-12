@@ -208,3 +208,33 @@ fileprivate extension URL {
         return UInt64(resourceValues.totalFileAllocatedSize ?? resourceValues.fileAllocatedSize ?? 0)
     }
 }
+
+extension Result {
+
+    func get<T>(withErrorHandler errorHandler: (Result<T, Failure>) -> Void) -> Success? {
+        switch self {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            errorHandler(.failure(error))
+            return nil
+        }
+    }
+
+}
+
+extension Dictionary {
+
+    func recursivelyMerging(_ other: Dictionary) -> Dictionary {
+        return merging(other) { old, new in
+            if let old = old as? Dictionary,
+                let new = new as? Dictionary,
+                // https://stackoverflow.com/a/45221496/3769927 (`as? Value`)
+                let merged = old.recursivelyMerging(new) as? Value {
+                return merged
+            }
+            return new
+        }
+    }
+
+}
