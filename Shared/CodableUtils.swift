@@ -8,6 +8,21 @@
 
 import Foundation
 
+struct EitherDecodable<First: Decodable, Second: Decodable>: Decodable {
+
+    enum Value {
+        case first(First)
+        case second(Second)
+    }
+
+    let value: Value
+
+    init(from decoder: Decoder) throws {
+        value = try (try? .first(First(from: decoder))) ?? .second(Second(from: decoder))
+    }
+
+}
+
 // either a number or a string containing a number
 struct PossiblyStringifiedNumber: Codable {
     let value: Int

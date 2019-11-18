@@ -115,9 +115,14 @@ extension FileManager {
     }
 
     func makeTemporaryDirectory() throws -> URL {
-        return try url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: documentDirectory, create: true)
+        return try url(
+            for: .itemReplacementDirectory,
+            in: .userDomainMask,
+            appropriateFor: documentDirectory,
+            create: true
+        )
     }
-    
+
 }
 
 extension MutableCollection {
@@ -235,6 +240,15 @@ extension Dictionary {
             }
             return new
         }
+    }
+
+}
+
+extension Optional {
+
+    func orThrow(_ error: @autoclosure () -> Error) throws -> Wrapped {
+        guard let wrapped = self else { throw error() }
+        return wrapped
     }
 
 }
