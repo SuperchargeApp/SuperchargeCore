@@ -80,6 +80,10 @@ extension URL {
 
 extension FileManager {
 
+    static var disallowedFilenameCharacters: CharacterSet {
+        .init(charactersIn: ":/")
+    }
+
     func forceCopyItem(atPath srcPath: String, toPath dstPath: String) throws {
         if fileExists(atPath: dstPath) {
             try removeItem(atPath: dstPath)
