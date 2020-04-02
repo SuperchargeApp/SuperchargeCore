@@ -89,6 +89,13 @@ public protocol ProtoCodableContainer {
     static var supportedTypes: [ProtoCodable.Type] { get }
 }
 
+// https://forums.swift.org/t/how-to-encode-objects-of-unknown-type/12253/5
+private extension Encodable {
+    func encode(into container: inout SingleValueEncodingContainer) throws {
+        try container.encode(self)
+    }
+}
+
 // encoding/decoding magic
 public extension ProtoCodableContainer {
     static func protoCodableType(for identifier: String) -> ProtoCodable.Type? {
@@ -99,7 +106,8 @@ public extension ProtoCodableContainer {
         let rawValue = try Converter.convert(value: value)
         let identifier = type(of: rawValue).identifier
         let encoder = try generateEncoder(identifier)
-        try rawValue.encode(to: encoder)
+        var container = encoder.singleValueContainer()
+        try rawValue.encode(into: &container)
     }
 
     init(from decoder: Decoder, identifier: String) throws {

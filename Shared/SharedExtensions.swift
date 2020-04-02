@@ -129,18 +129,55 @@ extension FileManager {
 
 }
 
-extension MutableCollection {
-
-    func removingDuplicates(_ isEqual: (Element, Element) -> Bool) -> [Element] {
-        var ret: [Element] = []
-        for element in self {
-            if !ret.contains(where: { isEqual(element, $0) }) {
-                ret.append(element)
+extension Collection {
+    func removingDuplicates(isEqual: (Element, Element) -> Bool) -> [Element] {
+        reduce(into: []) { result, curr in
+            if !result.contains(where: { isEqual($0, curr) }) {
+                result.append(curr)
             }
         }
-        return ret
     }
 
+    func removingDuplicates<T: Equatable>(equatingBy key: (Element) -> T) -> [Element] {
+        removingDuplicates { key($0) == key($1) }
+    }
+
+    func removingDuplicates<T: Hashable>(hashingBy key: (Element) -> T) -> [Element] {
+        var added: Set<T> = []
+        return filter { added.insert(key($0)).inserted }
+    }
+}
+extension Collection where Element: Equatable {
+    func removingDuplicates() -> [Element] { removingDuplicates { $0 == $1 } }
+}
+extension Collection where Element: Hashable {
+    func removingDuplicates() -> [Element] { removingDuplicates { $0 } }
+}
+
+extension RangeReplaceableCollection {
+    mutating func removeDuplicates(isEqual: (Element, Element) -> Bool) {
+        var added: [Element] = []
+        removeAll { curr in
+            let isNew = !added.contains(where: { isEqual($0, curr) })
+            if isNew { added.append(curr) }
+            return isNew
+        }
+    }
+
+    mutating func removeDuplicates<T: Equatable>(equatingBy key: (Element) -> T) {
+        removeDuplicates { key($0) == key($1) }
+    }
+
+    mutating func removeDuplicates<T: Hashable>(hashingBy key: (Element) -> T) {
+        var added: Set<T> = []
+        removeAll { added.insert(key($0)).inserted }
+    }
+}
+extension RangeReplaceableCollection where Element: Equatable {
+    mutating func removeDuplicates() { removeDuplicates { $0 } }
+}
+extension RangeReplaceableCollection where Element: Hashable {
+    mutating func removeDuplicates() { removeDuplicates { $0 } }
 }
 
 // https://gist.github.com/NikolaiRuhe/408cefb953c4bea15506a3f80a3e5b96
@@ -189,6 +226,7 @@ extension FileManager {
 
         return accumulatedSize
     }
+
 }
 
 
@@ -216,6 +254,7 @@ fileprivate extension URL {
         // meta data and compression) This value should always be available.
         return UInt64(resourceValues.totalFileAllocatedSize ?? resourceValues.fileAllocatedSize ?? 0)
     }
+
 }
 
 extension Result {
