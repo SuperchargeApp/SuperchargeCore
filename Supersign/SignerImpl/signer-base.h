@@ -11,13 +11,15 @@
 
 #include <stdio.h>
 
+#pragma clang assume_nonnull begin
+
 typedef struct entitlements_data {
     const char *bundle_path;
     const char *data;
     size_t len;
 } entitlements_data_t;
 
-// on failure, return non-zero and populate `*exception`
+// on failure, returns non-zero and populate `*exception`
 typedef int(*sign_func)(
     const char *app_directory,
     const char *cert_data,
@@ -28,20 +30,24 @@ typedef int(*sign_func)(
     size_t num_entitlements,
     void (^progress)(double),
     // must be freed if non-NULL
-    char **exception
+    char * _Nullable * _Nonnull exception
 );
 
 // the returned value must be freed
-typedef char *(*analyze_func)(
+// on failure, returns null and populates `*exception`
+typedef char * _Nullable (*analyze_func)(
     const char *path,
-    size_t *out_len
+    size_t *out_len,
+    char * _Nullable * _Nonnull exception
 );
 
 typedef struct signer {
     const char *name;
     sign_func sign;
     analyze_func analyze;
-    struct signer *next;
+    struct signer * _Nullable next;
 } signer_t;
+
+#pragma clang assume_nonnull end
 
 #endif /* signer_base_h */
