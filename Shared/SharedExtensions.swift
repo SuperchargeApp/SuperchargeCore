@@ -158,9 +158,9 @@ extension RangeReplaceableCollection {
     mutating func removeDuplicates(isEqual: (Element, Element) -> Bool) {
         var added: [Element] = []
         removeAll { curr in
-            let isNew = !added.contains(where: { isEqual($0, curr) })
-            if isNew { added.append(curr) }
-            return isNew
+            let exists = added.contains(where: { isEqual($0, curr) })
+            if !exists { added.append(curr) }
+            return exists
         }
     }
 
@@ -170,7 +170,7 @@ extension RangeReplaceableCollection {
 
     mutating func removeDuplicates<T: Hashable>(hashingBy key: (Element) -> T) {
         var added: Set<T> = []
-        removeAll { added.insert(key($0)).inserted }
+        removeAll { !added.insert(key($0)).inserted }
     }
 }
 extension RangeReplaceableCollection where Element: Equatable {
