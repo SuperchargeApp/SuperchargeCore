@@ -98,6 +98,10 @@ extension FileManager {
         try moveItem(at: srcURL, to: dstURL)
     }
 
+    var homeDirectory: URL {
+        URL(fileURLWithPath: NSHomeDirectory())
+    }
+
     var documentDirectory: URL {
         #if JB
         let url = URL(fileURLWithPath: "/var/mobile/Library/Application Support/Supercharge")
@@ -122,7 +126,7 @@ extension FileManager {
         return try url(
             for: .itemReplacementDirectory,
             in: .userDomainMask,
-            appropriateFor: documentDirectory,
+            appropriateFor: homeDirectory,
             create: true
         )
     }
