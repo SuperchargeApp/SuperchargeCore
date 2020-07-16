@@ -106,8 +106,9 @@ public extension ProtoCodableContainer {
         let rawValue = try Converter.convert(value: value)
         let identifier = type(of: rawValue).identifier
         let encoder = try generateEncoder(identifier)
-        var container = encoder.singleValueContainer()
-        try rawValue.encode(into: &container)
+        try rawValue.encode(to: encoder)
+        #warning("Using encode(info:) appears to make IPAKit.NilParameter crash.")
+        // when that's fixed we should go back to using encode(into:)
     }
 
     init(from decoder: Decoder, identifier: String) throws {
