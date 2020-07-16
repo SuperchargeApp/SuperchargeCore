@@ -24,8 +24,7 @@ func abstract(function: StaticString = #function, file: StaticString = #file, li
 extension String {
 
     func subtracting(_ base: String) -> String {
-        let afterBase = index(base.endIndex, offsetBy: 1)
-        return String(self[afterBase...])
+        String(self[base.endIndex...])
     }
 
 }
@@ -75,7 +74,14 @@ extension URL {
     func createDir() throws {
         try FileManager.default.createDirectory(at: self, withIntermediateDirectories: true, attributes: nil)
     }
-    
+
+    var fullyStandardized: URL { standardized.resolvingSymlinksInPath() }
+    var pathAsDirectory: String { path.appending("/") }
+
+    func isChild(of directory: URL) -> Bool {
+        fullyStandardized.path.hasPrefix(directory.fullyStandardized.pathAsDirectory)
+    }
+
 }
 
 extension FileManager {
@@ -129,6 +135,11 @@ extension FileManager {
             appropriateFor: homeDirectory,
             create: true
         )
+    }
+
+    /// should be equivalent to `temporaryDirectory`
+    var temporaryDirectoryShim: URL {
+        URL(fileURLWithPath: NSTemporaryDirectory())
     }
 
 }
