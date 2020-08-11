@@ -310,3 +310,15 @@ extension Optional {
     }
 
 }
+
+extension Array where Element == String {
+
+    func localizedJoined() -> String {
+        if #available(iOS 13, *) {
+            return ListFormatter.localizedString(byJoining: self)
+        } else {
+            return joined(separator: ", ")
+        }
+    }
+
+}
