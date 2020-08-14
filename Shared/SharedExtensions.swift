@@ -314,7 +314,7 @@ extension Optional {
 extension Array where Element == String {
 
     func localizedJoined() -> String {
-        if #available(iOS 13, *) {
+        if #available(iOS 13, macOS 10.15, *) {
             return ListFormatter.localizedString(byJoining: self)
         } else {
             return joined(separator: ", ")
