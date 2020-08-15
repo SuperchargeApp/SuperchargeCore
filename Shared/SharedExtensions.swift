@@ -322,3 +322,9 @@ extension Array where Element == String {
     }
 
 }
+
+extension Data.Deallocator {
+
+    static let deallocate: Self = .custom { pointer, _ in pointer.deallocate() }
+
+}

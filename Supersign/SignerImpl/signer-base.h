@@ -15,16 +15,16 @@
 
 typedef struct entitlements_data {
     const char *bundle_path;
-    const char *data;
+    const void *data;
     size_t len;
 } entitlements_data_t;
 
 // on failure, returns non-zero and populate `*exception`
 typedef int(*sign_func)(
     const char *app_directory,
-    const char *cert_data,
+    const void *cert_data,
     size_t cert_len,
-    const char *private_key_data,
+    const void *private_key_data,
     size_t private_key_len,
     const entitlements_data_t *entitlements,
     size_t num_entitlements,
@@ -35,7 +35,7 @@ typedef int(*sign_func)(
 
 // the returned value must be freed
 // on failure, returns null and populates `*exception`
-typedef char * _Nullable (*analyze_func)(
+typedef void * _Nullable (*analyze_func)(
     const char *path,
     size_t *out_len,
     char * _Nullable * _Nonnull exception
