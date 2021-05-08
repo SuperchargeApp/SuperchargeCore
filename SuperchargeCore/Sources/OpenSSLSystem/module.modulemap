@@ -1,0 +1,3 @@
+module openssl {
+    umbrella header "openssl.h"
+}
