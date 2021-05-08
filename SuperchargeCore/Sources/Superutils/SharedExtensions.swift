@@ -305,7 +305,7 @@ public extension Array where Element == String {
 
     func localizedJoined() -> String {
         #if !os(Linux)
-        if #available(iOS 13, macOS 10.15, *) {
+        if #available(macOS 10.15, *) {
             return ListFormatter.localizedString(byJoining: self)
         }
         #endif
