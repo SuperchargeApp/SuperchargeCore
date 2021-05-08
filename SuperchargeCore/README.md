@@ -1,0 +1,3 @@
+# SuperchargeCore
+
+Supercharge core libraries.
