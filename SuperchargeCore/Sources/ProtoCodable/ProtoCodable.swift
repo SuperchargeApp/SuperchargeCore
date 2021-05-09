@@ -107,7 +107,7 @@ public extension ProtoCodableContainer {
         let identifier = type(of: rawValue).identifier
         let encoder = try generateEncoder(identifier)
         try rawValue.encode(to: encoder)
-        #warning("Using encode(info:) appears to make IPAKit.NilParameter crash.")
+        // TODO: Using encode(into:) appears to make IPAKit.NilParameter crash.
         // when that's fixed we should go back to using encode(into:)
     }
 
