@@ -15,6 +15,11 @@ let package = Package(
             targets: ["Superutils"]
         ),
         .library(
+            name: "SuperutilsTestSupport",
+            type: .dynamic,
+            targets: ["SuperutilsTestSupport"]
+        ),
+        .library(
             name: "ProtoCodable",
             type: .dynamic,
             targets: ["ProtoCodable"]
@@ -29,6 +34,11 @@ let package = Package(
         .target(name: "ProtoCodable"),
         .target(name: "Superutils"),
         .target(name: "SignerSupport"),
+        .target(name: "SuperutilsTestSupport"),
+        .testTarget(
+            name: "ProtoCodableTests",
+            dependencies: ["ProtoCodable", "SuperutilsTestSupport"]
+        ),
     ]
 )
 

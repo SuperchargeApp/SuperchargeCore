@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import SuperutilsTestSupport
 
 class ProtoCodableTests: XCTestCase {
 
