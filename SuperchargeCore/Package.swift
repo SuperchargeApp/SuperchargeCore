@@ -61,11 +61,7 @@ package.products += [
 ]
 package.targets += [
     .systemLibrary(
-        name: "OpenSSLSystem",
-        pkgConfig: "openssl",
-        providers: [
-            .apt(["libssl-dev"])
-        ]
+        name: "OpenSSLSystem"
     ),
     .systemLibrary(
         name: "plistSystem",
