@@ -32,7 +32,8 @@ typedef int(*sign_func)(
     size_t private_key_len,
     const entitlements_data_t *entitlements,
     size_t num_entitlements,
-    void (^progress)(double),
+    void (*progress)(const void *, double),
+    const void *progressContext,
     // must be freed if non-NULL
     char * _Nullable * _Nonnull exception
 );
