@@ -1,0 +1,3 @@
+module libimobiledeviceGlue [extern_c] {
+    umbrella header "libimobiledevice-glue.h"
+}

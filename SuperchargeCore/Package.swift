@@ -55,13 +55,18 @@ let package = Package(
 #if os(Linux) || os(Windows)
 package.products += [
     .library(name: "plist", targets: ["plistSystem"]),
+    .library(name: "libimobiledeviceGlue", targets: ["libimobiledeviceGlueSystem"]),
     .library(name: "usbmuxd", targets: ["usbmuxdSystem"]),
     .library(name: "libimobiledevice", targets: ["libimobiledeviceSystem"]),
     .library(name: "OpenSSL", targets: ["OpenSSLSystem"]),
 ]
 package.targets += [
     .systemLibrary(
-        name: "OpenSSLSystem"
+        name: "OpenSSLSystem",
+        pkgConfig: "openssl",
+        providers: [
+            .apt(["libssl-dev"])
+        ]
     ),
     .systemLibrary(
         name: "plistSystem",
@@ -78,28 +83,33 @@ package.targets += [
         ]
     ),
     .systemLibrary(
+        name: "libimobiledeviceGlueSystem",
+        pkgConfig: "libimobiledevice-glue-1.0",
+        providers: [
+            .apt(["libimobiledevice-dev"])
+        ]
+    ),
+    .systemLibrary(
         name: "libimobiledeviceSystem",
         pkgConfig: "libimobiledevice-1.0",
         providers: [
             .apt(["libimobiledevice-dev"])
         ]
-    )
+    ),
 ]
 #else
-// the wrapper targets merely add a level of indirection, which seems to
-// resolve Xcode bugs for some bizarre reason.
-
 package.products += [
     .library(name: "plist", targets: ["plist"]),
+    .library(name: "libimobiledeviceGlue", targets: ["libimobiledeviceGlue"]),
     .library(name: "usbmuxd", targets: ["usbmuxd"]),
     .library(name: "libimobiledevice", targets: ["libimobiledevice"]),
     .library(name: "OpenSSL", targets: ["OpenSSL"]),
 ]
 package.targets += [
     .binaryTarget(name: "plist", path: "vendored/plist.xcframework"),
+    .binaryTarget(name: "libimobiledeviceGlue", path: "vendored/libimobiledeviceGlue.xcframework"),
     .binaryTarget(name: "usbmuxd", path: "vendored/usbmuxd.xcframework"),
     .binaryTarget(name: "libimobiledevice", path: "vendored/libimobiledevice.xcframework"),
     .binaryTarget(name: "OpenSSL", path: "vendored/OpenSSL.xcframework"),
 ]
-
 #endif
