@@ -9,7 +9,7 @@
 #ifndef signer_base_h
 #define signer_base_h
 
-#include <stdio.h>
+#include <stddef.h>
 
 #pragma clang assume_nonnull begin
 
