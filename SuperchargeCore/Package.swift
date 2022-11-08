@@ -16,7 +16,7 @@ let package = Package(
     name: "SuperchargeCore",
     platforms: [
         .iOS("13.0"),
-        .macOS("10.11")
+        .macOS("10.15")
     ],
     products: [
         .library(
