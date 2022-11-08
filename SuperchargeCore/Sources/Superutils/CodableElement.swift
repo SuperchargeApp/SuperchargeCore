@@ -42,6 +42,7 @@ public indirect enum CodableElement: Codable {
     case date(Date)
     case string(String)
 
+    // swiftlint:disable:next cyclomatic_complexity
     public init(from decoder: Decoder) throws {
         if let container = try? decoder.container(keyedBy: CodingKeys.self) {
             self = .dictionary(.init(uniqueKeysWithValues: try container.allKeys.map {
@@ -96,6 +97,7 @@ public indirect enum CodableElement: Codable {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     public func encode(to encoder: Encoder) throws {
         func encodeSingleValue<T: Encodable>(_ value: T) throws {
             var container = encoder.singleValueContainer()
@@ -153,6 +155,7 @@ public indirect enum CodableElement: Codable {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     public init?(value: Any?) {
         guard let value = value else {
             self = .nil
