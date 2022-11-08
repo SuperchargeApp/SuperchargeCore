@@ -200,7 +200,7 @@ public extension FileManager {
     func allocatedSizeOfDirectory(at directoryURL: URL) throws -> UInt64 {
 
         // The error handler simply stores the error and stops traversal
-        var enumeratorError: Error? = nil
+        var enumeratorError: Error?
         func errorHandler(_: URL, error: Error) -> Bool {
             enumeratorError = error
             return false
@@ -222,6 +222,7 @@ public extension FileManager {
             if enumeratorError != nil { break }
 
             // Add up individual file sizes.
+            // swiftlint:disable:next force_cast
             let contentItemURL = item as! URL
             accumulatedSize += try contentItemURL.regularFileAllocatedSize()
         }
@@ -234,13 +235,11 @@ public extension FileManager {
 
 }
 
-
-fileprivate let allocatedSizeResourceKeys: Set<URLResourceKey> = [
+private let allocatedSizeResourceKeys: Set<URLResourceKey> = [
     .isRegularFileKey,
     .fileAllocatedSizeKey,
     .totalFileAllocatedSizeKey,
 ]
-
 
 fileprivate extension URL {
 

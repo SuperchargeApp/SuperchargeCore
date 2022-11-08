@@ -20,6 +20,7 @@ class ProtoCodableTests: XCTestCase {
     """
 
     override func setUp() {
+        super.setUp()
         encoder = JSONEncoder()
         decoder = JSONDecoder()
     }
@@ -27,6 +28,7 @@ class ProtoCodableTests: XCTestCase {
     override func tearDown() {
         encoder = nil
         decoder = nil
+        super.tearDown()
     }
 
     func testBasicEncoding() throws {

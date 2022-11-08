@@ -67,12 +67,14 @@ public struct PossiblyFlatArray<T: Codable>: Codable {
 public extension Encodable {
     func jsonValue(withEncoder encoder: JSONEncoder = .init()) throws -> Any {
         let data = try encoder.encode([self])
+        // swiftlint:disable:next force_cast
         let arr = try JSONSerialization.jsonObject(with: data) as! [Any]
         return arr[0]
     }
 
     func plistValue(withEncoder encoder: PropertyListEncoder = .init()) throws -> Any {
         let data = try encoder.encode([self])
+        // swiftlint:disable:next force_cast
         let arr = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [Any]
         return arr[0]
     }
