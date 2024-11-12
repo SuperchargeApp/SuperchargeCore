@@ -22,14 +22,16 @@
 #ifndef __CBUF_H
 #define __CBUF_H
 
+#include <libimobiledevice-glue/glue.h>
+
 struct char_buf {
 	unsigned char* data;
 	unsigned int length;
 	unsigned int capacity;
 };
 
-struct char_buf* char_buf_new();
-void char_buf_free(struct char_buf* cbuf);
-void char_buf_append(struct char_buf* cbuf, unsigned int length, unsigned char* data);
+LIMD_GLUE_API struct char_buf* char_buf_new();
+LIMD_GLUE_API void char_buf_free(struct char_buf* cbuf);
+LIMD_GLUE_API void char_buf_append(struct char_buf* cbuf, unsigned int length, unsigned char* data);
 
 #endif /* __CBUF_H */
