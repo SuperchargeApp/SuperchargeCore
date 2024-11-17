@@ -39,6 +39,11 @@ let package = Package(
             type: .smart,
             targets: ["SignerSupport"]
         ),
+        .library(name: "plist", targets: ["plist"]),
+        .library(name: "libimobiledeviceGlue", targets: ["libimobiledeviceGlue"]),
+        .library(name: "usbmuxd", targets: ["usbmuxd"]),
+        .library(name: "libimobiledevice", targets: ["libimobiledevice"]),
+        .library(name: "OpenSSL", targets: ["OpenSSL"]),
     ],
     targets: [
         .target(name: "ProtoCodable"),
@@ -53,44 +58,42 @@ let package = Package(
 )
 
 #if os(Linux) || os(Windows)
-package.products += [
-    .library(name: "plist", targets: ["plistSystem"]),
-    .library(name: "libimobiledeviceGlue", targets: ["libimobiledeviceGlueSystem"]),
-    .library(name: "usbmuxd", targets: ["usbmuxdSystem"]),
-    .library(name: "libimobiledevice", targets: ["libimobiledeviceSystem"]),
-    .library(name: "OpenSSL", targets: ["OpenSSLSystem"]),
-]
 package.targets += [
     .systemLibrary(
-        name: "OpenSSLSystem",
+        name: "OpenSSL",
+        path: "Sources/OpenSSLSystem",
         pkgConfig: "openssl",
         providers: [
             .apt(["libssl-dev"])
         ]
     ),
     .systemLibrary(
-        name: "plistSystem",
+        name: "plist",
+        path: "Sources/plistSystem",
         pkgConfig: "libplist-2.0",
         providers: [
             .apt(["libplist-dev"])
         ]
     ),
     .systemLibrary(
-        name: "usbmuxdSystem",
+        name: "usbmuxd",
+        path: "Sources/usbmuxdSystem",
         pkgConfig: "libusbmuxd-2.0",
         providers: [
             .apt(["libusbmuxd-dev"])
         ]
     ),
     .systemLibrary(
-        name: "libimobiledeviceGlueSystem",
+        name: "libimobiledeviceGlue",
+        path: "Sources/libimobiledeviceGlueSystem",
         pkgConfig: "libimobiledevice-glue-1.0",
         providers: [
             .apt(["libimobiledevice-dev"])
         ]
     ),
     .systemLibrary(
-        name: "libimobiledeviceSystem",
+        name: "libimobiledevice",
+        path: "Sources/libimobiledeviceSystem",
         pkgConfig: "libimobiledevice-1.0",
         providers: [
             .apt(["libimobiledevice-dev"])
@@ -98,13 +101,6 @@ package.targets += [
     ),
 ]
 #else
-package.products += [
-    .library(name: "plist", targets: ["plist"]),
-    .library(name: "libimobiledeviceGlue", targets: ["libimobiledeviceGlue"]),
-    .library(name: "usbmuxd", targets: ["usbmuxd"]),
-    .library(name: "libimobiledevice", targets: ["libimobiledevice"]),
-    .library(name: "OpenSSL", targets: ["OpenSSL"]),
-]
 package.targets += [
     .binaryTarget(name: "plist", path: "vendored/plist.xcframework"),
     .binaryTarget(name: "libimobiledeviceGlue", path: "vendored/libimobiledeviceGlue.xcframework"),
