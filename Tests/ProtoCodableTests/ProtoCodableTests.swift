@@ -16,12 +16,13 @@ class ProtoCodableTests: XCTestCase {
 
     private let myName = "Kabir"
     private lazy var encoded = """
-    {"type":"String","name":"\(myName)"}
+    {"name":"\(myName)","type":"String"}
     """
 
     override func setUp() {
         super.setUp()
         encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
         decoder = JSONDecoder()
     }
 
