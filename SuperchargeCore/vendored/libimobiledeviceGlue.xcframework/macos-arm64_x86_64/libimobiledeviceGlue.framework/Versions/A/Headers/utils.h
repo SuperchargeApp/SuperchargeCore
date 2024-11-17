@@ -25,38 +25,20 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <stdio.h>
-#include <plist/plist.h>
+#include <stdint.h>
+#include <libimobiledevice-glue/glue.h>
 
 #define MAC_EPOCH 978307200
 
-char *string_concat(const char *str, ...);
-char *string_append(char *str, ...);
-char *string_build_path(const char *elem, ...);
-char *string_format_size(uint64_t size);
-char *string_toupper(char *str);
-char *generate_uuid(void);
+LIMD_GLUE_API char *string_concat(const char *str, ...);
+LIMD_GLUE_API char *string_append(char *str, ...);
+LIMD_GLUE_API char *string_build_path(const char *elem, ...);
+LIMD_GLUE_API char *string_format_size(uint64_t size);
+LIMD_GLUE_API char *string_toupper(char *str);
+LIMD_GLUE_API char *generate_uuid(void);
 
-int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length);
-int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length);
-
-enum plist_format_t {
-	PLIST_FORMAT_XML,
-	PLIST_FORMAT_BINARY
-};
-
-int plist_read_from_filename(plist_t *plist, const char *filename);
-int plist_write_to_filename(plist_t plist, const char *filename, enum plist_format_t format);
-
-void plist_print_to_stream(plist_t plist, FILE* stream);
-void plist_print_to_stream_with_indentation(plist_t plist, FILE* stream, unsigned int indentation);
+LIMD_GLUE_API int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length);
+LIMD_GLUE_API int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length);
 
 #endif
