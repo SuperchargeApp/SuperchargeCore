@@ -327,6 +327,8 @@ public extension Array where Element == String {
 
 public extension Data.Deallocator {
 
-    static let deallocate: Self = .custom { pointer, _ in pointer.deallocate() }
+    static var deallocate: Self {
+        .custom { pointer, _ in pointer.deallocate() }
+    }
 
 }

@@ -1,4 +1,4 @@
-// swift-tools-version:5.10
+// swift-tools-version:6.0
 
 import PackageDescription
 
@@ -45,8 +45,16 @@ let package = Package(
         .library(name: "libimobiledevice", targets: ["libimobiledevice"]),
         .library(name: "OpenSSL", targets: ["OpenSSL"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/pointfreeco/swift-concurrency-extras.git", from: "1.3.0"),
+    ],
     targets: [
-        .target(name: "ProtoCodable"),
+        .target(
+            name: "ProtoCodable",
+            dependencies: [
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+            ]
+        ),
         .target(name: "Superutils"),
         .target(name: "SignerSupport"),
         .target(name: "SuperutilsTestSupport"),

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ConcurrencyExtras
 
 // TODO: Make ProtoCodableIdentifier type (possibly enum) which specifies identifier mode
 // eg fromBase/custom. But maybe a bit more extensible so make it a String RawRepresentable
@@ -35,12 +36,12 @@ public extension ProtoCodable {
 }
 
 // caches the protocodable type mapping to each identifier, for different container types
-public class ProtoCodableIdentifierMapper {
+public final class ProtoCodableIdentifierMapper: Sendable {
     public static let shared = ProtoCodableIdentifierMapper()
     private init() {}
 
     // [ContainerType: [identifier: type]]
-    private var identifiers: [ObjectIdentifier: [String: ProtoCodable.Type]] = [:]
+    private let identifiers = LockIsolated<[ObjectIdentifier: [String: ProtoCodable.Type]]>([:])
 
     public func type<T: ProtoCodableContainer>(
         for identifier: String, in containerType: T.Type
@@ -48,11 +49,13 @@ public class ProtoCodableIdentifierMapper {
         let containerID = ObjectIdentifier(T.self)
 
         let identifierList: [String: ProtoCodable.Type]
-        if let list = identifiers[containerID] {
+        if let list = identifiers.withValue({ $0[containerID ]}) {
             identifierList = list
         } else {
             identifierList = Dictionary(T.supportedTypes.map { ($0.identifier, $0) }, uniquingKeysWith: { a, _ in a })
-            identifiers[containerID] = identifierList
+            identifiers.withValue {
+                $0[containerID] = identifierList
+            }
         }
 
         return identifierList[identifier]

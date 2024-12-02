@@ -16,10 +16,10 @@ public extension Encodable {
     }
 }
 
-public struct AnyEncodable: Encodable {
-    public var value: Encodable
+public struct AnyEncodable: Encodable, Sendable {
+    public var value: Encodable & Sendable
 
-    public init(_ value: Encodable) {
+    public init(_ value: Encodable & Sendable) {
         self.value = value
     }
 
@@ -29,6 +29,6 @@ public struct AnyEncodable: Encodable {
     }
 }
 
-public extension Encodable {
+public extension Encodable where Self: Sendable {
     func eraseToAnyEncodable() -> AnyEncodable { .init(self) }
 }

@@ -38,6 +38,8 @@ public struct ProtoCodableKeyValueContainer<T: ProtoCodableContainer>: Codable {
     }
 }
 
+extension ProtoCodableKeyValueContainer: Sendable where T: Sendable {}
+
 extension ProtoCodableKeyValueContainer {
     public func encode(to encoder: Encoder) throws {
         var rootContainer = encoder.container(keyedBy: CodingKeys.self)
